@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FRONTIER — 15s motion study</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #14120f;
+        --cream: #f3eee6;
+        --yellow: #e4ff3a;
+        --red: #ff4b2e;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; background: var(--ink); color: var(--cream); }
+      body {
+        min-height: 100vh;
+        font-family: "Syne", "Avenir Next", sans-serif;
+        padding: 48px 28px 72px;
+      }
+      main { max-width: 1100px; margin: 0 auto; }
+      header {
+        display: flex;
+        justify-content: space-between;
+        gap: 24px;
+        align-items: end;
+        margin-bottom: 28px;
+      }
+      h1 {
+        font-size: clamp(64px, 10vw, 120px);
+        line-height: 0.84;
+        letter-spacing: -0.05em;
+        margin: 0;
+      }
+      .kicker {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        letter-spacing: 0.18em;
+        font-size: 13px;
+        opacity: 0.72;
+        margin-bottom: 12px;
+      }
+      .meta {
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        letter-spacing: 0.14em;
+        font-size: 12px;
+        text-align: right;
+        opacity: 0.7;
+      }
+      .stage {
+        position: relative;
+        background: #000;
+        border: 1px solid rgba(243, 238, 230, 0.2);
+      }
+      video { width: 100%; height: auto; display: block; background: #000; }
+      .play {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(to top, rgba(20, 18, 15, 0.35), transparent 40%);
+        border: 0;
+        cursor: pointer;
+      }
+      .play strong {
+        background: var(--yellow);
+        color: var(--ink);
+        padding: 16px 22px;
+        letter-spacing: 0.16em;
+        font-size: 14px;
+      }
+      .hidden { display: none; }
+      .chapters { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+      button.chapter {
+        background: transparent;
+        color: var(--cream);
+        border: 1px solid rgba(243, 238, 230, 0.28);
+        padding: 10px 12px;
+        letter-spacing: 0.14em;
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      button.chapter:hover, button.chapter[aria-current="true"] {
+        background: var(--yellow);
+        color: var(--ink);
+        border-color: var(--yellow);
+      }
+      p { max-width: 62ch; line-height: 1.5; color: rgba(243, 238, 230, 0.78); }
+      .missing {
+        padding: 28px;
+        background: var(--red);
+        color: var(--ink);
+        font-weight: 700;
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">15 SEC · 1080P · 60 FPS</p>
+      <header>
+        <h1>FRONTIER</h1>
+        <div class="meta">
+          REQUEST<br />PARALLEL<br />JUDGE<br />BEST
+        </div>
+      </header>
+      <div class="stage">
+        <video id="film" poster="./poster.png" playsinline preload="metadata" muted>
+          <source src="./showreel.mp4" type="video/mp4" />
+        </video>
+        <button class="play" id="play" type="button"><strong>PLAY</strong></button>
+        <div class="missing hidden" id="missing">
+          Preview file missing. From the project root run <code>npm run render:preview</code>.
+        </div>
+      </div>
+      <div class="chapters" id="chapters">
+        <button class="chapter" type="button" data-time="0">00 REQUEST</button>
+        <button class="chapter" type="button" data-time="3">03 PARALLEL</button>
+        <button class="chapter" type="button" data-time="7">07 JUDGE</button>
+        <button class="chapter" type="button" data-time="11.5">11.5 BEST</button>
+      </div>
+      <p>
+        One brief splits into four traces. A judge draws the efficient frontier.
+        The composite, not any single trace, dominates the field. Designed to read on mute.
+        This is an abstract motion study, not a product film.
+      </p>
+    </main>
+    <script>
+      const film = document.getElementById("film");
+      const play = document.getElementById("play");
+      const missing = document.getElementById("missing");
+      film.addEventListener("error", () => missing.classList.remove("hidden"));
+      const start = () => {
+        film.muted = true;
+        film.play();
+        play.classList.add("hidden");
+      };
+      play.addEventListener("click", start);
+      film.addEventListener("play", () => play.classList.add("hidden"));
+      film.addEventListener("pause", () => {
+        if (film.currentTime < film.duration) play.classList.remove("hidden");
+      });
+      film.addEventListener("ended", () => play.classList.remove("hidden"));
+      document.getElementById("chapters").addEventListener("click", (event) => {
+        const button = event.target.closest("button");
+        if (!button) return;
+        film.currentTime = Number(button.dataset.time);
+        start();
+        for (const node of document.querySelectorAll(".chapter")) {
+          node.toggleAttribute("aria-current", node === button);
+        }
+      });
+    </script>
+  </body>
+</html>
