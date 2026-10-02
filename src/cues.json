@@ -1,0 +1,19 @@
+{
+  "fps": 60,
+  "bpm": 120,
+  "duration": 900,
+  "one": 30,
+  "request": 60,
+  "sub": 96,
+  "split": 126,
+  "parallel": 180,
+  "lock": [240, 270, 300, 330],
+  "judge": 420,
+  "chart": 480,
+  "points": [510, 540, 570, 600],
+  "composite": 630,
+  "best": 690,
+  "bestTitle": 708,
+  "bestSub": 750,
+  "bestPipe": 786
+}
